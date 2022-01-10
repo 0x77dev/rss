@@ -62,7 +62,7 @@ const load = async () => {
       const res = await parser.parseString(await data.text())
       items.push(...res.items.slice(0, 2).map((data) => ({
         ...data, 
-        title: `${res.title}/ ${data.title}`, 
+        title: `${feed.category}/ ${data.title}`, 
         categories: [...data.categories || [], feed.category],
         date: new Date(data.pubDate as string),
         link: data.link as string
@@ -83,7 +83,7 @@ const loadPosts = async () => {
   for (const item of items) {
     feed.addItem({...item, date: new Date(item.date)})
   }
-  
+
   const lastUpdated = await RSS_DATA.get('lastUpdated')
   feed.options.updated = lastUpdated ? new Date(lastUpdated) : new Date()
 }
