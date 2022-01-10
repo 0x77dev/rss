@@ -1,14 +1,13 @@
+import { Feed, Item } from "feed";
 import {
   Application,
   Middleware,
   Router,
   normalizePathnameMiddleware
 } from '@cfworker/web';
+import Parser from "rss-parser";
 
 const router = new Router();
-
-import { Feed } from "feed";
-
 const feed = new Feed({
   title: "0x77dev",
   description: "Personal feed of Mykhailo Marynenko",
@@ -30,23 +29,69 @@ const feed = new Feed({
   }
 });
 
-router.get('/', ({res}) => {
+const feeds = [
+  {
+    category: 'releases',
+    links: ['https://github.com/prisma/prisma/releases.atom', 'https://github.com/facebook/react/releases.atom', 'https://github.com/vuejs/vue/releases.atom', 'https://github.com/electron/electron/releases.atom', 'https://github.com/graphql-nexus/nexus', 'https://github.com/graphql/graphql-spec/releases.atom', 'https://github.com/graphql/graphql-js/releases.atom', 'https://github.com/nats-io/nats-server/releases.atom', 'https://github.com/nats-io/nats.js/releases.atom', 'https://github.com/microsoft/TypeScript/releases.atom', 'https://github.com/nodejs/node/releases.atom']
+  },
+  {
+    category: 'socials',
+    links: ['https://github.com/0x77dev.atom', 'https://rss.app/feeds/XppH2uwddFq6486S.xml', 'https://twitchrss.appspot.com/vod/0x77dev', 'https://rss.app/feeds/iXaXTMb8SSbFrNMP.xml']
+  }
+]
+
+const load = async () => {
+  const parser = new Parser()
+  const items: Item[] = JSON.parse(await RSS_DATA.get('items') || '[]')
+
+  for (const feed of feeds) {
+    for (const link of feed.links) {
+      const data = await fetch(link)
+      const res = await parser.parseString(await data.text())
+      items.push(...res.items.map((data) => ({
+        ...data, 
+        title: `${res.title}/ ${data.title}`, 
+        categories: [...data.categories || [], feed.category],
+        date: new Date(data.pubDate as string),
+        link: data.link as string
+      })))
+    }
+  }
+
+  await RSS_DATA.put('items', JSON.stringify(items))
+}
+
+addEventListener('scheduled', load)
+
+const loadPosts = async () => {
+  load().then(console.log).catch(console.error)
+  const items: Item[] = JSON.parse(await RSS_DATA.get('items') || '[]')
+
+  for (const item of items) {
+    feed.addItem({...item, date: new Date(item.date)})
+  }
+}
+
+router.get('/', ({ res }) => {
   res.headers.set('Location', 'https://github.com/0x77dev/rss')
   res.status = 308
   res.body = 'https://github.com/0x77dev/rss'
 })
 
-router.get('/atom', ({res}) => {
+router.get('/atom', async ({ res }) => {
+  await loadPosts()
   res.headers.set('Content-Type', 'application/atom+xml')
   res.body = feed.atom1()
 })
 
-router.get('/json', ({res}) => {
+router.get('/json', async ({ res }) => {
+  await loadPosts()
   res.headers.set('Content-Type', 'application/json')
   res.body = feed.json1()
 })
 
-router.get('/rss2', ({res}) => {
+router.get('/rss2', async ({ res }) => {
+  await loadPosts()
   res.headers.set('Content-Type', 'application/rss+xml')
   res.body = feed.rss2()
 })

@@ -12,7 +12,11 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js'],
     fallback: {
       stream: require.resolve("stream-browserify"),
-      buffer: require.resolve("buffer/")
+      buffer: require.resolve("buffer/"),
+      timers: require.resolve("timers-browserify"),
+      url: require.resolve("url/"),
+      https: require.resolve("https-browserify"),
+      http: require.resolve("stream-http"),
     }
   },
   module: {

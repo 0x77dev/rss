@@ -6,7 +6,13 @@ route = ""
 workers_dev = true
 compatibility_date = "2022-01-10"
 
+kv_namespaces = [ 
+    { binding = "RSS_DATA", id = "6bb39ffa18c14838906b1aa486e494c3", preview_id = "6bb39ffa18c14838906b1aa486e494c3" }
+]
+
 [build]
 command = "yarn install && yarn run build"
 [build.upload]
 format = "service-worker"
+[triggers]
+crons = ["* * * * *"]
