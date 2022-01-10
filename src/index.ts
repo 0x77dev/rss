@@ -6,6 +6,7 @@ import {
   normalizePathnameMiddleware
 } from '@cfworker/web';
 import Parser from "rss-parser";
+import { getPreview } from "./preview";
 
 const router = new Router();
 const feed = new Feed({
@@ -98,10 +99,10 @@ const loadPosts = async () => {
   feed.options.updated = lastUpdated ? new Date(lastUpdated) : new Date()
 }
 
-router.get('/', ({ res }) => {
-  res.headers.set('Location', 'https://github.com/0x77dev/rss')
-  res.status = 308
-  res.body = 'https://github.com/0x77dev/rss'
+router.get('/', async ({ res }) => {
+  await loadPosts()
+  res.headers.set('Content-Type', 'text/html; charset=utf-8')
+  res.body = getPreview(feed.items)
 })
 
 router.get('/reload', async ({ res }) => {
