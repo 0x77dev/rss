@@ -54,13 +54,13 @@ const feeds = [
 
 const load = async () => {
   const parser = new Parser()
-  const items: Item[] = JSON.parse(await RSS_DATA.get('items') || '[]')
+  const items: Item[] = []
 
   for (const feed of feeds) {
     for (const link of feed.links) {
       const data = await fetch(link)
       const res = await parser.parseString(await data.text())
-      items.push(...res.items.map((data) => ({
+      items.push(...res.items.slice(0, 2).map((data) => ({
         ...data, 
         title: `${res.title}/ ${data.title}`, 
         categories: [...data.categories || [], feed.category],
@@ -70,6 +70,7 @@ const load = async () => {
     }
   }
 
+  await RSS_DATA.put('lastUpdated', new Date().toISOString())
   await RSS_DATA.put('items', JSON.stringify(items))
 }
 
@@ -82,6 +83,9 @@ const loadPosts = async () => {
   for (const item of items) {
     feed.addItem({...item, date: new Date(item.date)})
   }
+  
+  const lastUpdated = await RSS_DATA.get('lastUpdated')
+  feed.options.updated = lastUpdated ? new Date(lastUpdated) : new Date()
 }
 
 router.get('/', ({ res }) => {
