@@ -80,7 +80,9 @@ const load = async () => {
   return items
 }
 
-addEventListener('scheduled', load)
+addEventListener('scheduled', (event) => {
+  event.waitUntil(load())
+})
 
 const loadPosts = async () => {
   load().then(console.log).catch(console.error)
