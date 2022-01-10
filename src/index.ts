@@ -31,12 +31,24 @@ const feed = new Feed({
 
 const feeds = [
   {
-    category: 'releases',
-    links: ['https://github.com/prisma/prisma/releases.atom', 'https://github.com/facebook/react/releases.atom', 'https://github.com/vuejs/vue/releases.atom', 'https://github.com/electron/electron/releases.atom', 'https://github.com/graphql-nexus/nexus', 'https://github.com/graphql/graphql-spec/releases.atom', 'https://github.com/graphql/graphql-js/releases.atom', 'https://github.com/nats-io/nats-server/releases.atom', 'https://github.com/nats-io/nats.js/releases.atom', 'https://github.com/microsoft/TypeScript/releases.atom', 'https://github.com/nodejs/node/releases.atom']
-  },
-  {
     category: 'socials',
     links: ['https://github.com/0x77dev.atom', 'https://rss.app/feeds/XppH2uwddFq6486S.xml', 'https://twitchrss.appspot.com/vod/0x77dev', 'https://rss.app/feeds/iXaXTMb8SSbFrNMP.xml']
+  },
+  {
+    category: 'releases',
+    links: [
+      'https://github.com/prisma/prisma/releases.atom', 
+      'https://github.com/facebook/react/releases.atom', 
+      'https://github.com/vuejs/vue/releases.atom', 
+      'https://github.com/electron/electron/releases.atom', 
+      'https://github.com/graphql-nexus/nexus/releases.atom', 
+      'https://github.com/graphql/graphql-spec/releases.atom', 
+      'https://github.com/graphql/graphql-js/releases.atom', 
+      'https://github.com/nats-io/nats-server/releases.atom', 
+      'https://github.com/nats-io/nats.js/releases.atom', 
+      'https://github.com/microsoft/TypeScript/releases.atom', 
+      'https://github.com/nodejs/node/releases.atom'
+    ]
   }
 ]
 
@@ -76,6 +88,14 @@ router.get('/', ({ res }) => {
   res.headers.set('Location', 'https://github.com/0x77dev/rss')
   res.status = 308
   res.body = 'https://github.com/0x77dev/rss'
+})
+
+router.get('/reload', async ({ res }) => {
+  await RSS_DATA.delete('list')
+  await load()
+  res.headers.set('Location', '/rss2')
+  res.status = 302
+  res.body = '/rss2'
 })
 
 router.get('/atom', async ({ res }) => {
