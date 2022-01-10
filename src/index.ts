@@ -51,7 +51,9 @@ const feeds = [
       'https://github.com/nats-io/nats-server/releases.atom', 
       'https://github.com/nats-io/nats.js/releases.atom', 
       'https://github.com/microsoft/TypeScript/releases.atom', 
-      'https://github.com/nodejs/node/releases.atom'
+      'https://github.com/nodejs/node/releases.atom',
+      'https://github.com/fastify/fastify/releases.atom',
+      'https://github.com/mercurius-js/mercurius/releases.atom'
     ]
   }
 ]
