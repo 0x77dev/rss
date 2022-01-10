@@ -31,6 +31,10 @@ const feed = new Feed({
 
 const feeds = [
   {
+    category: 'news',
+    links: ['https://hnrss.org/newest?points=100']
+  },
+  {
     category: 'socials',
     links: ['https://github.com/0x77dev.atom', 'https://rss.app/feeds/XppH2uwddFq6486S.xml', 'https://twitchrss.appspot.com/vod/0x77dev', 'https://rss.app/feeds/iXaXTMb8SSbFrNMP.xml']
   },
@@ -62,7 +66,7 @@ const load = async () => {
       const res = await parser.parseString(await data.text())
       items.push(...res.items.slice(0, 2).map((data) => ({
         ...data, 
-        title: `${feed.category}/ ${data.title}`, 
+        title: `${feed.category}/ ${res.title} | ${data.title}`, 
         categories: [...data.categories || [], feed.category],
         date: new Date(data.pubDate as string),
         link: data.link as string
@@ -72,6 +76,8 @@ const load = async () => {
 
   await RSS_DATA.put('lastUpdated', new Date().toISOString())
   await RSS_DATA.put('items', JSON.stringify(items))
+
+  return items
 }
 
 addEventListener('scheduled', load)
