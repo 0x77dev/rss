@@ -122,6 +122,16 @@ router.get('/json', async ({ res }) => {
   res.body = feed.json1()
 })
 
+router.get('/sources', async ({ res }) => {
+  res.headers.set('Content-Type', 'application/json')
+  res.body = feeds
+})
+
+router.get('/add', async ({ res }) => {
+  res.headers.set('Content-Type', 'text/html')
+  res.body = `<html><meta http-equiv="refresh" content="0;URL=feed://rss.0x77.dev/rss2"><a href="feed://rss.0x77.dev/rss2"> add feed </a></html>`
+})
+
 router.get('/rss2', async ({ res }) => {
   await loadPosts()
   res.headers.set('Content-Type', 'application/rss+xml')
