@@ -2,6 +2,8 @@
 
 My personal RSS feeds aggregator running on cloudflare workers.
 
+_updated every minute_
+
 [Add feed](https://rss.0x77.dev/add)
 
 ## Endpoints
